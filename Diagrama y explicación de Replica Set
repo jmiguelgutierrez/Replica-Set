@@ -92,4 +92,17 @@ Ej: AWS
     Sharding o escalado horizontal
                     __________________________________________
                     
-                    
+    Para arrancar los 3 servidores lo hacemos desde la linea de comandos y luego ponemos
+    
+    mongo --port 27017 para el PRIMARIO
+    
+    rs.status() Ver las configuraciones
+                    __________________________________________
+    db.setSlaveOk()  -> Permiso de lectura
+    show collections                   No podiamos leer en los SECUNDARIOS
+    db.biblioteca.findOne()
+    
+    Solamente puede escribir el PRIMARIO
+    db.setSlaveOk(false) -> Quita permisos de lectura
+    
+    Me incorpora el 27017 como SECUNDARIO
