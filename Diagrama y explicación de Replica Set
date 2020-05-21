@@ -29,4 +29,67 @@ Enterprise  }
 
 El MONGO COMPASS esta instalado en Community
 
-El
+El secundario sigue replicando a los que siguen vivos.
+Los muertos no se puede hacer nada.
+
+Operaciones de RollBack cuando el SERVIDOR PRIMARIO ha fallado. El mecanismo es proporcional reconocimiento de escritura sobre uno o la mayoria.
+
+C:\Users\manana> md data\server1
+C:\Users\manana> md data\server2
+C:\Users\manana> md data\server3
+  %MONGO_DATA_PATH%
+
+net
+    port: 27017
+    bindIp: 127.0.0.1
+    
+Poner si el servidor esta alojado en otro sitio
+
+Ej: AWS
+    ____________________________
+    |                           |
+    |                           |
+    |                           |
+    |                           |
+    _____________________________
+    ip: 142.23.7.12
+    port: 27017
+    Al arrancar mongod
+    
+    Cliente una IP y Servidor otra IP. Adaptador puente
+    En el cmd
+    >mongod --replSet clusterGetafe --dbpath data\server1 --port 27017
+    >mongod --replSet clusterGetafe --dbpath data\server2 --port 27018
+    >mongod --replSet clusterGetafe --dbpath data\server3 --port 27019
+    
+    >rs.config={
+            _id: "clusterGetafe",
+            members:[
+                {_id:0,host:"localhost:27017},
+                {_id:1,host:"localhost:27018},
+                {_id:2,host:"localhost:27019}
+                ])
+    >rs.initiate(rs.config)
+    Estamos conectados con la Shell a un cluster
+    clusterGetafe:SECONDARY> rs.status()
+    clusterGetafe:PRIMARY>
+    
+    >rs.isMaster()
+    //Miembros que hay
+    Ya está en PRIMARIO y podemos trabajar
+    
+    Operaciones de escritura solamente en el primario.
+    
+    oplog -> Se está ejecutando de manera idempotente
+    Idempotente -> Lo ejecuta 1000 veces y obtienes el mismo resultado
+    
+    SINCRONO -> Secuencial
+    ASINCRONO -> No se sabe cuanto va a tardar ni el orden
+    
+    mongoexport --port 27019 --collection=foo --db=getafeTest --foo.json
+    Lo crea en C:\Users\manana\foo.json
+    
+    Sharding o escalado horizontal
+                    __________________________________________
+                    
+                    
