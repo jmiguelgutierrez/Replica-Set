@@ -1,1 +1,32 @@
+REPLICA SET
 
+                                     PRIMARIO
+                                    __________
+ASÍNCRONA                server1    __________
+                         oplog      __________
+                                    __________
+                                      27017
+                                  /          \  
+              SECUNDARIO         /            \             SECUNDARIO                       
+                 __________     /              \        __________
+       server3   __________    /                \       __________      server2
+       oplog     __________                             __________      oplog  
+                 __________                             __________    
+                   27019                                  27018
+                   
+Si el propio SERVIDOR primario deja de funcionar automaticamente uno de los SECUNDARIOS pasa a ser PRIMARIO y el tercero SECUNDARIO.
+
+No es lo mismo que los RAID 0, 1 ó 5
+Los RAID son Discos y estos son SERVIDORES
+
+0,5 GB DE RAM a uno de 8 GB
+El precio económico depende de las caracteristicas
+
+ATLAS es una plataforma CLOUD
+
+Community   }    Licencias de MONGO DB
+Enterprise  }
+
+El MONGO COMPASS esta instalado en Community
+
+El
