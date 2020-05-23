@@ -258,9 +258,7 @@ ASÍNCRONA                local      __________
 ASÍNCRONA                server1    __________
                          oplog      __________
                                     __________
-                                      27017
-                                  /          \  
-              SECUNDARIO         /            \             SECUNDARIO                       
+                                   
                  __________     /              \        __________
        server3   __________    /                \       __________      server2
        oplog     __________                             __________      oplog  
