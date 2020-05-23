@@ -106,3 +106,33 @@ Ej: AWS
     db.setSlaveOk(false) -> Quita permisos de lectura
     
     Me incorpora el 27017 como SECUNDARIO
+    
+   REPLICA SET
+
+                                     PRIMARIO
+                                    __________
+   ASÍNCRONA             server1    __________
+                         oplog      __________
+                                    __________
+                                      27017
+                                  /          \  
+              SECUNDARIO         /            \             SECUNDARIO                       
+                 __________     /              \        __________
+       server3   __________    /                \       __________      server2
+       oplog     __________                             __________      oplog  
+                 __________                             __________    
+                   27019      \                  /        27018
+                               \                /
+                                \              /
+                          SECUNDARIO              SECUNDARIO   
+                          ____________           ____________ 
+             server4      ____________  _ _ _    ____________     server5
+             oplog        ____________           ____________     oplog
+                          ____________           ____________
+                   
+                   
+                   
+                   
+                   
+                   
+                   
