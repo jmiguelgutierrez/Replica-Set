@@ -113,13 +113,13 @@ Ej: AWS
                                     __________
    ASÍNCRONA             server1    __________
                          oplog      __________
-                                    __________
-                                      27017
+                                    __________                                       No hay Primario
+                                      27017                                               en Lisboa
                                   /          \  
               SECUNDARIO         /            \             SECUNDARIO                       
                  __________     /              \        __________
-       server3   __________    /                \       __________      server2
-       oplog     __________                             __________      oplog  
+       server3   __________    /                \       __________      server2       Lanzamos elecciones
+       oplog     __________                             __________      oplog       para que uno sea Primario
                  __________                             __________    
                    27019      \                  /        27018
                                \                /
@@ -130,9 +130,120 @@ Ej: AWS
              oplog        ____________           ____________     oplog
                           ____________           ____________
                    
-                   
-                   
-                   
-                   
-                   
-                   
+
+        El sistema no permite 2 primarios
+        Se exige que haya mayoria
+        
+      PRIMARY>configuration.members[2].priority = 2
+      PRIMARY>rs.config(configuration)
+      
+      PRIMARY>rs.add({host:"localhost:27020";priority:0; votes:0}
+      PRIMARY>rs.status()
+      
+      El primario esta en el 27019                                              27017 -> SECUNDARIO
+                                                                                27018 -> SECUNDARIO
+                                                                                27019 -> PRIMARIO
+                                                                                27020 -> SECUNDARIO
+      configuracion = rs.config()
+      
+      PRIMARY>configuration.members[3].priority = 1
+      PRIMARY>configuration.members[3].votes = 1
+      
+      > rs.config(configuracion)
+      
+      
+                                     PRIMARIO
+                                    __________
+   ASÍNCRONA             server1    __________
+                         oplog      __________
+                                    __________                                       No hay Primario
+                                      27019                                               en Lisboa
+                                  /          \  
+                 SECUNDARIO      /            \         SECUNDARIO                       
+                 __________     /              \        __________
+       server3   __________    /                \       __________      server2       Lanzamos elecciones
+       oplog     __________                             __________      oplog       para que uno sea Primario
+                 __________                             __________    
+                   27017      \                  /        27018
+                               \                /
+                                \              /
+                                  SECUNDARIO        
+                                  ____________  
+                     server4      ____________  
+                      oplog       ____________  
+                                  ____________                     
+                                      27018     
+                                      
+  Vamos a añadir un quinto miembro para provocar el desempate.
+                            ________________________________________
+                            
+   REPLICA SET
+
+                                     PRIMARIO
+                                    __________
+ASÍNCRONA                local      __________
+                         oplog      __________
+                                    __________
+                                      27017
+                                  /          \  
+              SECUNDARIO         /            \             SECUNDARIO                       
+                 __________     /              \        __________
+       local     __________    /                \       __________      local       Idempotente
+       oplog     __________     _ _ _ _ _ _ _ _         __________      oplog  
+                 __________                             __________    
+                                 
+        use local
+        show collections
+        db.oplog.rs.find()
+        
+        use getafeTest
+        db.foo2.update({puntuacion:0},{$inc:{puntuacion:1}})
+        db.oplog.rs.find().sort({$natural:-1})
+        
+       PRIMARY> for (i=0; i<100; i++)
+                { db.foo3.insert ({a:i})}
+       PRIMARY> db.foo3.find().count()
+       PRIMARY> db.foo3.update({},{$set:{mensaje:"Hola"}},{multi:true})
+       
+      >db.oplog.rs.find({op:"i"}).sort({$natural:-1})
+      Escribe la Tabla en local y no la Replica a todos los miembros de SET
+      Delay -> Lo deja en el destino sin reconocimiento
+      
+      REPLICA SET OPLOG
+      
+      ROLLBACK                SPRING NODE                     Pasa a ser        
+      ___________                         _________           Primario
+      |_________|  100                   |_________| 100         y          
+      |   PR    |  101       - - - - - - |   SC    | 101      nos quedamos
+      |_________|  102                   |_________| 103      con 2 servidores
+             \                                       104 
+              \                __________  
+               \____________  |_________| 100
+                              |   SC    | 101
+                              |_________|
+ 
+      Delegamos  en la Aplicación de ese Sistema perdido o ese Servidor perdido.
+      
+      REPLICA SET OPLOG
+      
+      ROLLBACK                SPRING NODE                     Pasa a ser        
+      ___________                         _________           Primario
+      |_________|  100   Error en 103    |_________| 100         y          
+      |   PR    |  101     latencia- - - |   SC    | 101      nos quedamos
+      |_________|  102                   |_________|         con 2 servidores
+             \                                        
+              \                __________  
+               \____________  |_________| 100
+                              |   SC    | 101
+                              |_________|
+                              
+                              
+       show collections
+       db.foo.insert({a:1},{w:"majority",j:true,wtiemout:5000})
+       db.foo3.update({},{$set:{mensaje:"Hola"}},
+                         {multi:true,w:"majority"})
+                         
+       SHARDING
+          Escalabilidad horizontal
+       
+       
