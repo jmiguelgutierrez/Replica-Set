@@ -246,4 +246,25 @@ ASÍNCRONA                local      __________
        SHARDING
           Escalabilidad horizontal
        
-       
+                             A P L I C A C I O N E S
+                         
+                         MongoS                     MongoS                    Config Server
+                       _____|____                  _____|___
+        El Sharding es a nivel de colección no de Base de Datos           
+                                                                            REPLICA SET
+
+                                     PRIMARIO
+                                    __________
+ASÍNCRONA                server1    __________
+                         oplog      __________
+                                    __________
+                                      27017
+                                  /          \  
+              SECUNDARIO         /            \             SECUNDARIO                       
+                 __________     /              \        __________
+       server3   __________    /                \       __________      server2
+       oplog     __________                             __________      oplog  
+                 __________                             __________    
+                   27019                                  27018
+        
+        
