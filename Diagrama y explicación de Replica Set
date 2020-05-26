@@ -266,4 +266,37 @@ ASÍNCRONA                local      __________
        __________                      __________   ____________       ____________   ____________    ____________
        __________                      __________   ____________       ____________   ____________    _____________
                
-        
+       google draw
+       quickdraw.withgoogle.com
+                                  configServer1   27100  
+       |__| datash                configServer2   27101
+         |                        configServer3   27102
+         |                        shServer1       27200     
+         |____ data               shServer2       27201
+                            nombre cluster "configServerGetafe"
+                            
+  >mongod --dbpath datash/configServer1 --port 27100 --replSet configServerGetafe --configsvr
+  
+  En otra terminal poner: mongo --port 27100
+  
+  >rs.initiate({
+          _id:"configServerGetafe",
+          configsvr:true,
+          members:[
+          {_id:0,host:"localhost:27100"}
+          {_id:1,host:"localhost:27101"}
+          {_id:2,host:"localhost:27102"}
+         ]})
+         
+  >configServerGetafe:SECONDARY>
+                                                    datash\shServer1 --shardsvr
+                                                    --port 27200  --shardsvr
+                                                    
+              27200                         27201
+              -------                      -------
+              |      |                     |      |
+              ________                     ________
+              shServer1                     shServer2
+              
+              
+              
